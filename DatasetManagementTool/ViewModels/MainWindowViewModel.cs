@@ -14,10 +14,19 @@ namespace DatasetManagementTool.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        #region Privates
+
         private readonly IManifestFileService _manifestFileService;
 
         private string _title = "Dataset Management";
         private ObservableCollection<DataBatch> _dataBatchList;
+        private bool _isManifestLoaded;
+        private DataEntry _selectedDataEntry;
+        private DataBatch _selectedBatch;
+
+        #endregion
+
+        #region Properties
 
         public string Title
         {
@@ -31,7 +40,6 @@ namespace DatasetManagementTool.ViewModels
             private set => SetProperty(ref _dataBatchList, value);
         }
 
-        private bool _isManifestLoaded;
 
         public bool IsManifestLoaded
         {
@@ -39,12 +47,33 @@ namespace DatasetManagementTool.ViewModels
             set { SetProperty(ref _isManifestLoaded, value); }
         }
 
+        public DataBatch SelectedBatch
+        {
+            get { return _selectedBatch; }
+            set { SetProperty(ref _selectedBatch, value); }
+        }
+
+        public DataEntry SelectedDataEntry
+        {
+            get { return _selectedDataEntry; }
+            set { SetProperty(ref _selectedDataEntry, value); }
+        }
+
+        #endregion
+
+
         #region Commands
+
+        #region CanExecutes
 
         public bool CanExecuteWhenManifestNotNull()
         {
             return IsManifestLoaded;
         }
+
+        #endregion
+
+        #region Menu
 
         public DelegateCommand LoadCommand => new DelegateCommand(ExecuteLoadCommand);
 
@@ -85,25 +114,70 @@ namespace DatasetManagementTool.ViewModels
             _manifestFileService.New();
         }
 
+        public DelegateCommand SaveAndExportCommand =>
+            new DelegateCommand(ExecuteSaveAndExportCommand, CanExecuteWhenManifestNotNull).ObservesProperty(() =>
+                IsManifestLoaded);
+
+        private void ExecuteSaveAndExportCommand()
+        {
+            ExecuteSaveCommand();
+            // TODO: Export
+        }
+
+        #endregion
+
+        #region Batch Manager
+
         public DelegateCommand CreateBatchCommand =>
             new DelegateCommand(ExecuteCreateBatchCommand, CanExecuteWhenManifestNotNull)
                 .ObservesProperty(() => IsManifestLoaded);
 
         private void ExecuteCreateBatchCommand()
         {
-            _manifestFileService.InsertBatch(new DataBatch() { Name = $"Batch{DateTime.Now.ToFileTime()}"});
+            _manifestFileService.InsertBatch(new DataBatch() {Name = $"Batch{DateTime.Now.ToFileTime()}"});
         }
 
         public DelegateCommand DeleteBatchCommand =>
-            new DelegateCommand(ExecuteDeleteBatchCommand, CanExecuteWhenManifestNotNull)
-                .ObservesProperty(() => IsManifestLoaded);
+            new DelegateCommand(ExecuteDeleteBatchCommand,
+                    () => CanExecuteWhenManifestNotNull() && SelectedBatch != null)
+                .ObservesProperty(() => IsManifestLoaded)
+                .ObservesProperty(() => SelectedBatch);
 
         private void ExecuteDeleteBatchCommand()
         {
-            // _manifestFileService.RemoveBatch();
+            _manifestFileService.RemoveBatch(SelectedBatch);
         }
 
         #endregion
+
+        #region Image Manager
+
+        public DelegateCommand DatasetAddImagesCommand =>
+            new DelegateCommand(ExecuteDatasetAddImagesCommand, () => SelectedBatch != null).ObservesProperty(() =>
+                SelectedBatch);
+
+        private void ExecuteDatasetAddImagesCommand()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+                    SelectedBatch.InsertData(new DataEntry() {AddTime = DateTime.Now, File = "hihi.jpg"}));
+        }
+
+        public DelegateCommand DatasetRemoveImageCommand => 
+            new DelegateCommand(ExecuteDatasetRemoveImageCommand, () => SelectedDataEntry != null).ObservesProperty(() => SelectedDataEntry);
+
+        private void ExecuteDatasetRemoveImageCommand()
+        {
+            SelectedBatch.RemoveData(SelectedDataEntry);
+        }
+
+        #endregion
+
+        #endregion
+
+        public MainWindowViewModel()
+        {
+            _manifestFileService = new ManifestFileService();
+        }
 
         public MainWindowViewModel(IManifestFileService manifestFileService)
         {

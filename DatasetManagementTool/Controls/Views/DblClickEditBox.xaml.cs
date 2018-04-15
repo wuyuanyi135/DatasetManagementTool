@@ -23,6 +23,7 @@ namespace DatasetManagementTool.Controls.Views
         public DblClickEditBox()
         {
             InitializeComponent();
+            ContextMenu = null;
         }
 
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
@@ -32,6 +33,10 @@ namespace DatasetManagementTool.Controls.Views
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+        }
+
+        protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
         {
         }
 

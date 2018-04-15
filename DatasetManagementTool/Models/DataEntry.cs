@@ -4,9 +4,9 @@ namespace DatasetManagementTool.Models
 {
     public class DataEntry
     {
-        public string File;
-        public string Dir;
-        public string Hash;
-        public DateTime AddTime;
+        public string File { get; set; }
+        public string Dir { get; set; }
+        public string Hash { get; set; }
+        public DateTime AddTime { get; set; }
     }
 }

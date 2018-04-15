@@ -5,52 +5,65 @@
         xmlns:models="clr-namespace:DatasetManagementTool.Models"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:views="clr-namespace:DatasetManagementTool.Controls.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:DatasetManagementTool.ViewModels"
+        mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="600" Width="800">
+        Title="{Binding Title}" Height="600" Width="800"
+        d:DataContext="{viewModels:MainWindowViewModel}">
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Manifest _File">
-                <MenuItem Header="_New" Command="{Binding NewCommand}"></MenuItem>
-                <MenuItem Header="_Load" Command="{Binding LoadCommand}"/>
-                <MenuItem Header="_Save" Command="{Binding SaveCommand}"/>
-                <MenuItem Header="Save _As" Command="{Binding SaveAsCommand}"/>
+                <MenuItem Header="_New" Command="{Binding NewCommand}" />
+                <MenuItem Header="_Load" Command="{Binding LoadCommand}" />
+                <MenuItem Header="_Save" Command="{Binding SaveCommand}" />
+                <MenuItem Header="Save _As" Command="{Binding SaveAsCommand}" />
+                <MenuItem Header="Save and _Export" Command="{Binding SaveAndExportCommand}" />
             </MenuItem>
         </Menu>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="147*"/>
-                <ColumnDefinition Width="16*"/>
-                <ColumnDefinition Width="34*"/>
+                <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="590*"/>
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
-            <Grid Column="0" Grid.ColumnSpan="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition Height="5"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
-                <DataGrid Grid.Row="0"/>
-                <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
-                <ListBox Grid.Row="2" ItemsSource="{Binding DataBatchList}" HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:DataBatch}">
-                            <views:DblClickEditBox HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Text="{Binding Name}" >
-                            </views:DblClickEditBox>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                    <ListBox.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Create Batch" Command="{Binding CreateBatchCommand}"/>
-                            <MenuItem Header="Delete Batch" Command="{Binding DeleteBatchCommand}"/>
-                        </ContextMenu>
-                    </ListBox.ContextMenu>
-                </ListBox>
-            </Grid>
+            <ListBox SelectedItem="{Binding SelectedBatch}" Grid.Column="0" ItemsSource="{Binding DataBatchList}"
+                     HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:DataBatch}">
+                        <views:DblClickEditBox HorizontalAlignment="Stretch" Background="Transparent"
+                                               BorderThickness="0" Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Create Batch" Command="{Binding CreateBatchCommand}" />
+                        <MenuItem Header="Delete Batch" Command="{Binding DeleteBatchCommand}" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
 
-            <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch"/>
-            <Image Grid.Column="4"/>
+
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Image Grid.Row="0"/>
+                <GridSplitter VerticalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+                <DataGrid SelectedItem="{Binding SelectedDataEntry}" Grid.Row="2" IsReadOnly="True" ItemsSource="{Binding SelectedBatch.Datasets}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="_Add Images" Command="{Binding DatasetAddImagesCommand}" />
+                            <MenuItem Header="Remove _Image" Command="{Binding DatasetRemoveImageCommand}" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

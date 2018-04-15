@@ -5,9 +5,8 @@ namespace DatasetManagementTool.Models
 {
     public class DataBatch
     {
-        public string Dir { get; set; }
         public string Name { get; set; }
-        public ObservableCollection<DataEntry> Datasets = new ObservableCollection<DataEntry>();
+        public ObservableCollection<DataEntry> Datasets { get; } = new ObservableCollection<DataEntry>();
 
         public void InsertData(DataEntry d)
         {
