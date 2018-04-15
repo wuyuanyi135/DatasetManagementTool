@@ -14,10 +14,6 @@ namespace DatasetManagementTool.Services
 {
     public class ManifestFileService : BindableBase, IManifestFileService
     {
-        public ManifestFileService()
-        {
-
-        }
         private Manifest _manifest;
         private string _manifestPath;
         private bool _dirty;
@@ -30,6 +26,7 @@ namespace DatasetManagementTool.Services
                 var serializer = new JsonSerializer();
                 _manifest = (Manifest) serializer.Deserialize(file, typeof(Manifest));
                 _manifestPath = path;
+                OnManifestLoaded?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -55,6 +52,7 @@ namespace DatasetManagementTool.Services
         public void New()
         {
             _manifest = new Manifest();
+            OnManifestLoaded?.Invoke(this, EventArgs.Empty);
             Dirty = true;
         }
 
@@ -105,6 +103,23 @@ namespace DatasetManagementTool.Services
             private set => SetProperty(ref _dirty, value);
         }
 
-        public Manifest Manifest { get; private set; }
+        public Manifest Manifest => _manifest;
+
+        public void InsertBatch(DataBatch entry)
+        {
+            _manifest.DataBatches.Add(entry);
+        }
+
+        public void RemoveBatch(DataBatch entry)
+        {
+            _manifest.DataBatches.Remove(entry);
+        }
+
+        public DataBatch GetBatch(int index)
+        {
+            return _manifest.DataBatches[index];
+        }
+
+        public event EventHandler OnManifestLoaded;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace DatasetManagementTool.Models
 {
@@ -6,6 +7,6 @@ namespace DatasetManagementTool.Models
     {
         public string RootDirRelativeToManifest;
 
-        public List<DataBatch> DataBatches;
+        public ObservableCollection<DataBatch> DataBatches = new ObservableCollection<DataBatch>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using DatasetManagementTool.Models;
 
 namespace DatasetManagementTool.Services
@@ -11,9 +12,15 @@ namespace DatasetManagementTool.Services
         void New();
 
         void Save(string path = null);
-        void SaveDialog(string filename = null);
+        void SaveDialog(string filename = "Manifest.json");
 
         bool Dirty { get; }
         Manifest Manifest { get; }
+
+        void InsertBatch(DataBatch entry);
+        void RemoveBatch(DataBatch entry);
+        DataBatch GetBatch(int index);
+
+        event EventHandler OnManifestLoaded;
     }
 }
