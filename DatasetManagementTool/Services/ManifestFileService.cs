@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -68,7 +69,6 @@ namespace DatasetManagementTool.Services
                 {
                     throw new InvalidOperationException("Path not provided");
                 }
-                
             }
 
             using (var file = File.CreateText(path))
@@ -122,6 +122,40 @@ namespace DatasetManagementTool.Services
         public DataBatch GetBatch(int index)
         {
             return Manifest.DataBatches[index];
+        }
+
+        public void AddImagesDialog(DataBatch destBatch)
+        {
+            var dlg = new OpenFileDialog()
+            {
+                Multiselect = true,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png",
+                DefaultExt = "*.jpg; *.jpeg; *.jpe; *.jfif; *.png"
+            };
+            if (dlg.ShowDialog().GetValueOrDefault(false))
+            {
+                foreach (var fileName in dlg.FileNames)
+                {
+                    var entry = new DataEntry();
+                    entry.File = Path.GetFileName(fileName);
+                    entry.Dir = Path.GetFullPath(fileName);
+                    entry.Hash = ComputeHash(File.OpenRead(fileName));
+                    entry.AddTime = DateTime.Now;
+
+                    destBatch.Datasets.Add(entry);
+                }
+            }
+        }
+
+        private string ComputeHash(Stream s)
+        {
+            using (var md5 = MD5.Create())
+            {
+                var hash = md5.ComputeHash(s);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            }
         }
 
         public event EventHandler OnManifestLoaded;

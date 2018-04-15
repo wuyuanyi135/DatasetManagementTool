@@ -22,5 +22,6 @@ namespace DatasetManagementTool.Services
         DataBatch GetBatch(int index);
 
         event EventHandler OnManifestLoaded;
+        void AddImagesDialog(DataBatch destBatch);
     }
 }

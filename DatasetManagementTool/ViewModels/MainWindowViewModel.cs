@@ -159,7 +159,7 @@ namespace DatasetManagementTool.ViewModels
         private void ExecuteDatasetAddImagesCommand()
         {
             Application.Current.Dispatcher.Invoke(() =>
-                    SelectedBatch.InsertData(new DataEntry() {AddTime = DateTime.Now, File = "hihi.jpg"}));
+                _manifestFileService.AddImagesDialog(SelectedBatch));
         }
 
         public DelegateCommand DatasetRemoveImageCommand => 
