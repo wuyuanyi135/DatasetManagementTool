@@ -1,5 +1,6 @@
 ﻿using DatasetManagementTool.Views;
 using System.Windows;
+using DatasetManagementTool.Services;
 using Prism.Modularity;
 using Microsoft.Practices.Unity;
 using Prism.Unity;
@@ -20,8 +21,15 @@ namespace DatasetManagementTool
 
         protected override void ConfigureModuleCatalog()
         {
-            var moduleCatalog = (ModuleCatalog)ModuleCatalog;
+            var moduleCatalog = (ModuleCatalog) ModuleCatalog;
             //moduleCatalog.AddModule(typeof(YOUR_MODULE));
+        }
+
+        protected override void ConfigureContainer()
+        {
+            base.ConfigureContainer();
+
+            Container.RegisterType<IManifestFileService, ManifestFileService>(new ContainerControlledLifetimeManager());
         }
     }
 }

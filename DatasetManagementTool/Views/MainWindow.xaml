@@ -3,8 +3,40 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525">
-    <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
-    </Grid>
+        Title="{Binding Title}" Height="600" Width="800">
+    <DockPanel LastChildFill="True">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Manifest _File">
+                <MenuItem Header="_Load" />
+                <MenuItem Header="_Save" />
+            </MenuItem>
+            <MenuItem Header="_Manage Data Batch">
+                <MenuItem Header="_Create New" />
+                <MenuItem Header="_Manage Existing" />
+            </MenuItem>
+        </Menu>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="147*"/>
+                <ColumnDefinition Width="16*"/>
+                <ColumnDefinition Width="34*"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="590*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Column="0" Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <DataGrid Grid.Row="0"/>
+                <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
+                <ListBox Grid.Row="2"/>
+            </Grid>
+
+            <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch"/>
+            <Image Grid.Column="4"/>
+        </Grid>
+    </DockPanel>
 </Window>
