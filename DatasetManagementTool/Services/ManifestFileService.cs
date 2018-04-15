@@ -24,7 +24,7 @@ namespace DatasetManagementTool.Services
             using (var file = File.OpenText(path))
             {
                 var serializer = new JsonSerializer();
-                _manifest = (Manifest) serializer.Deserialize(file, typeof(Manifest));
+                Manifest = (Manifest) serializer.Deserialize(file, typeof(Manifest));
                 _manifestPath = path;
                 OnManifestLoaded?.Invoke(this, EventArgs.Empty);
             }
@@ -51,7 +51,7 @@ namespace DatasetManagementTool.Services
 
         public void New()
         {
-            _manifest = new Manifest();
+            Manifest = new Manifest();
             OnManifestLoaded?.Invoke(this, EventArgs.Empty);
             Dirty = true;
         }
@@ -74,7 +74,7 @@ namespace DatasetManagementTool.Services
             using (var file = File.CreateText(path))
             {
                 var serializer = new JsonSerializer();
-                serializer.Serialize(file, _manifest);
+                serializer.Serialize(file, Manifest);
             }
 
             _manifestPath = path;
@@ -103,21 +103,25 @@ namespace DatasetManagementTool.Services
             private set => SetProperty(ref _dirty, value);
         }
 
-        public Manifest Manifest => _manifest;
+        public Manifest Manifest
+        {
+            get => _manifest;
+            set => SetProperty(ref _manifest, value);
+        }
 
         public void InsertBatch(DataBatch entry)
         {
-            _manifest.DataBatches.Add(entry);
+            Manifest.DataBatches.Add(entry);
         }
 
         public void RemoveBatch(DataBatch entry)
         {
-            _manifest.DataBatches.Remove(entry);
+            Manifest.DataBatches.Remove(entry);
         }
 
         public DataBatch GetBatch(int index)
         {
-            return _manifest.DataBatches[index];
+            return Manifest.DataBatches[index];
         }
 
         public event EventHandler OnManifestLoaded;

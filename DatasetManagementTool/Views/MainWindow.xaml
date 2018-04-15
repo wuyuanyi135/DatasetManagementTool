@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:models="clr-namespace:DatasetManagementTool.Models"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:views="clr-namespace:DatasetManagementTool.Controls.Views"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="600" Width="800">
     <DockPanel LastChildFill="True">
@@ -31,10 +33,11 @@
                 </Grid.RowDefinitions>
                 <DataGrid Grid.Row="0"/>
                 <GridSplitter Grid.Row="1" VerticalAlignment="Stretch"/>
-                <ListBox Grid.Row="2" ItemsSource="{Binding DataBatchList}">
+                <ListBox Grid.Row="2" ItemsSource="{Binding DataBatchList}" HorizontalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataBatch}">
-                            <TextBlock Text="{Binding Name}"></TextBlock>
+                            <views:DblClickEditBox HorizontalAlignment="Stretch" Background="Transparent" BorderThickness="0" Text="{Binding Name}" >
+                            </views:DblClickEditBox>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ContextMenu>

@@ -1,8 +1,8 @@
 ﻿using DatasetManagementTool.Views;
 using System.Windows;
 using DatasetManagementTool.Services;
-using Prism.Modularity;
 using Microsoft.Practices.Unity;
+using Prism.Modularity;
 using Prism.Unity;
 
 namespace DatasetManagementTool
@@ -11,7 +11,7 @@ namespace DatasetManagementTool
     {
         protected override DependencyObject CreateShell()
         {
-            return Container.Resolve<MainWindow>();
+            return Container.TryResolve<MainWindow>();
         }
 
         protected override void InitializeShell()

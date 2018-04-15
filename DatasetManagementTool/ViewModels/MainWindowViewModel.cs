@@ -16,7 +16,7 @@ namespace DatasetManagementTool.ViewModels
     {
         private readonly IManifestFileService _manifestFileService;
 
-        private string _title;
+        private string _title = "Dataset Management";
         private ObservableCollection<DataBatch> _dataBatchList;
 
         public string Title
@@ -31,7 +31,21 @@ namespace DatasetManagementTool.ViewModels
             private set => SetProperty(ref _dataBatchList, value);
         }
 
+        private bool _isManifestLoaded;
+
+        public bool IsManifestLoaded
+        {
+            get { return _isManifestLoaded; }
+            set { SetProperty(ref _isManifestLoaded, value); }
+        }
+
         #region Commands
+
+        public bool CanExecuteWhenManifestNotNull()
+        {
+            return IsManifestLoaded;
+        }
+
         public DelegateCommand LoadCommand => new DelegateCommand(ExecuteLoadCommand);
 
         void ExecuteLoadCommand()
@@ -39,7 +53,9 @@ namespace DatasetManagementTool.ViewModels
             _manifestFileService.LoadDialog();
         }
 
-        public DelegateCommand SaveCommand => new DelegateCommand(ExecuteSaveCommand);
+        public DelegateCommand SaveCommand =>
+            new DelegateCommand(ExecuteSaveCommand, CanExecuteWhenManifestNotNull)
+                .ObservesProperty(() => IsManifestLoaded);
 
         private void ExecuteSaveCommand()
         {
@@ -53,7 +69,9 @@ namespace DatasetManagementTool.ViewModels
             }
         }
 
-        public DelegateCommand SaveAsCommand => new DelegateCommand(ExecuteSaveAsCommand);
+        public DelegateCommand SaveAsCommand =>
+            new DelegateCommand(ExecuteSaveAsCommand, CanExecuteWhenManifestNotNull)
+                .ObservesProperty(() => IsManifestLoaded);
 
         private void ExecuteSaveAsCommand()
         {
@@ -67,14 +85,26 @@ namespace DatasetManagementTool.ViewModels
             _manifestFileService.New();
         }
 
-        public DelegateCommand CreateBatchCommand => new DelegateCommand(ExecuteCreateBatchCommand);
+        public DelegateCommand CreateBatchCommand =>
+            new DelegateCommand(ExecuteCreateBatchCommand, CanExecuteWhenManifestNotNull)
+                .ObservesProperty(() => IsManifestLoaded);
 
         private void ExecuteCreateBatchCommand()
         {
-            _manifestFileService.InsertBatch(new DataBatch(){});
+            _manifestFileService.InsertBatch(new DataBatch() { Name = $"Batch{DateTime.Now.ToFileTime()}"});
+        }
+
+        public DelegateCommand DeleteBatchCommand =>
+            new DelegateCommand(ExecuteDeleteBatchCommand, CanExecuteWhenManifestNotNull)
+                .ObservesProperty(() => IsManifestLoaded);
+
+        private void ExecuteDeleteBatchCommand()
+        {
+            // _manifestFileService.RemoveBatch();
         }
 
         #endregion
+
         public MainWindowViewModel(IManifestFileService manifestFileService)
         {
             _manifestFileService = manifestFileService;
@@ -84,12 +114,12 @@ namespace DatasetManagementTool.ViewModels
                 .Subscribe(new AnonymousObserver<bool>(b => Title = $"Dataset Management {(b ? "*" : "")} "));
 
             _manifestFileService.OnManifestLoaded += _manifestFileService_OnManifestLoaded;
-            
         }
 
         private void _manifestFileService_OnManifestLoaded(object sender, EventArgs e)
         {
             DataBatchList = _manifestFileService.Manifest.DataBatches;
+            IsManifestLoaded = _manifestFileService.Manifest != null;
         }
     }
 }
