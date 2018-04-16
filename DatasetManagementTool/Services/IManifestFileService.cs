@@ -23,5 +23,6 @@ namespace DatasetManagementTool.Services
 
         event EventHandler OnManifestLoaded;
         void AddImagesDialog(DataBatch destBatch);
+        void ExportDialog();
     }
 }

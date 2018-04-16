@@ -121,7 +121,7 @@ namespace DatasetManagementTool.ViewModels
         private void ExecuteSaveAndExportCommand()
         {
             ExecuteSaveCommand();
-            // TODO: Export
+            _manifestFileService.ExportDialog();
         }
 
         #endregion

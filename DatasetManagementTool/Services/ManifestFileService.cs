@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Forms;
 using DatasetManagementTool.Models;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Prism.Mvvm;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace DatasetManagementTool.Services
 {
@@ -154,12 +157,19 @@ namespace DatasetManagementTool.Services
             };
             if (dlg.ShowDialog().GetValueOrDefault(false))
             {
+                var hashCollection = ComputeHashList();
                 foreach (var fileName in dlg.FileNames)
                 {
                     var entry = new DataEntry();
+                    var hash = ComputeHash(File.OpenRead(fileName));
+                    if (hashCollection.Contains(hash))
+                    {
+                        MessageBox.Show($"{fileName} is already in the batches! skip.", "Duplication found.");
+                        continue;
+                    }
+                    entry.Hash = hash;
                     entry.File = Path.GetFileName(fileName);
                     entry.Dir = Path.GetDirectoryName(fileName);
-                    entry.Hash = ComputeHash(File.OpenRead(fileName));
                     entry.AddTime = DateTime.Now;
 
                     destBatch.Datasets.Add(entry);
@@ -176,6 +186,60 @@ namespace DatasetManagementTool.Services
             }
         }
 
+        public void ExportDialog()
+        {
+            var dlg = new FolderBrowserDialog() {Description = "Select folder to export", ShowNewFolderButton = true};
+            var result = dlg.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                Export(dlg.SelectedPath);
+            }
+        }
+
+        public void Export(string path)
+        {
+            foreach (var batch in _manifest.DataBatches)
+            {
+                ExportBatch(path, batch);
+            }
+        }
+
+        public void ExportBatch(string path, DataBatch batch)
+        {
+            var dirName = Path.Combine(path, batch.Name);
+            if (! Directory.Exists(dirName))
+            {
+                Directory.CreateDirectory(dirName);
+            }
+
+            foreach (var dataset in batch.Datasets)
+            {
+                var destImageFilePath = Path.Combine(dirName, dataset.File);
+                if (File.Exists(destImageFilePath))
+                {
+                    var hash = ComputeHash(File.OpenRead(destImageFilePath));
+                    if (hash == dataset.Hash)
+                        continue;
+                }
+
+                File.Copy(dataset.ImagePath, destImageFilePath, true);
+            }
+        }
+
+        private List<string> ComputeHashList()
+        {
+            List<string> hashList = new List<string>();
+            foreach (var manifestDataBatch in _manifest.DataBatches)
+            {
+                foreach (var dataEntry in manifestDataBatch.Datasets)
+                {
+                    hashList.Add(dataEntry.Hash);
+                }
+            }
+
+            return hashList;
+        }
         public event EventHandler OnManifestLoaded;
     }
 }
