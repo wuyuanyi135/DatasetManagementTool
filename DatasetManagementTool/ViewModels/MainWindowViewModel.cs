@@ -134,7 +134,7 @@ namespace DatasetManagementTool.ViewModels
 
         private void ExecuteCreateBatchCommand()
         {
-            _manifestFileService.InsertBatch(new DataBatch() {Name = $"Batch{DateTime.Now.ToFileTime()}"});
+            _manifestFileService.InsertBatch(new DataBatch());
         }
 
         public DelegateCommand DeleteBatchCommand =>

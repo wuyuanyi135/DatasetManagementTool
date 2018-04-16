@@ -34,7 +34,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:DataBatch}">
                         <views:DblClickEditBox HorizontalAlignment="Stretch" Background="Transparent"
-                                               BorderThickness="0" Text="{Binding Name}" />
+                                               BorderThickness="0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ContextMenu>
@@ -53,7 +53,7 @@
                     <RowDefinition Height="5"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Image Grid.Row="0"/>
+                <Image Grid.Row="0" Source="{Binding SelectedDataEntry.ImagePath}"/>
                 <GridSplitter VerticalAlignment="Stretch" Grid.Row="1"></GridSplitter>
                 <DataGrid SelectedItem="{Binding SelectedDataEntry}" Grid.Row="2" IsReadOnly="True" ItemsSource="{Binding SelectedBatch.Datasets}" AutoGenerateColumns="True" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.ContextMenu>

@@ -111,7 +111,25 @@ namespace DatasetManagementTool.Services
 
         public void InsertBatch(DataBatch entry)
         {
+            if (entry.Name == null)
+            {
+                entry.Name = AssignUniqueBatchName();
+            }
             Manifest.DataBatches.Add(entry);
+        }
+
+        private string AssignUniqueBatchName()
+        {
+            int i = 0;
+            while (true)
+            {
+                var name = $"Batch {i}";
+                if (_manifest.DataBatches.All(batch => batch.Name != name))
+                {
+                    return name;
+                }
+                i++;
+            }
         }
 
         public void RemoveBatch(DataBatch entry)
@@ -140,7 +158,7 @@ namespace DatasetManagementTool.Services
                 {
                     var entry = new DataEntry();
                     entry.File = Path.GetFileName(fileName);
-                    entry.Dir = Path.GetFullPath(fileName);
+                    entry.Dir = Path.GetDirectoryName(fileName);
                     entry.Hash = ComputeHash(File.OpenRead(fileName));
                     entry.AddTime = DateTime.Now;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace DatasetManagementTool.Models
 {
@@ -8,5 +9,7 @@ namespace DatasetManagementTool.Models
         public string Dir { get; set; }
         public string Hash { get; set; }
         public DateTime AddTime { get; set; }
+
+        public string ImagePath => Path.Combine(Dir, File);
     }
 }
